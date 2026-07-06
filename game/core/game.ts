@@ -157,6 +157,8 @@ export class Game {
     this.audio.dispose();
     window.removeEventListener("keydown", this.audioGesture);
     window.removeEventListener("pointerdown", this.audioGesture);
-    this.events.clear();
+    // NOTE: the event bus is intentionally NOT cleared — systems subscribe in
+    // their constructors, and StrictMode dispose→start cycles reuse this
+    // instance. Listeners are garbage-collected with the Game itself.
   }
 }
