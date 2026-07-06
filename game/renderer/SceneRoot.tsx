@@ -6,16 +6,18 @@ import { RingsView } from "@/game/gameplay/rings/RingsView";
 import { ChipsView } from "@/game/gameplay/bluechips/ChipsView";
 import { PlayerView } from "./PlayerView";
 import { Particles } from "./Particles";
+import { useGame } from "./GameContext";
 
 const showDebug =
   process.env.NODE_ENV === "development" ||
   (typeof window !== "undefined" && window.location.search.includes("debug"));
 
 export function SceneRoot() {
+  const game = useGame();
+  const Environment = game.stage.Environment;
   return (
     <>
-      <hemisphereLight args={["#b9a7ff", "#3c5c3a", 1.1]} />
-      <directionalLight position={[10, 40, 10]} intensity={1.4} color="#ffe0b8" />
+      <Environment />
       <PlayerView />
       <RingsView />
       <ChipsView />

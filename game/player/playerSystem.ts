@@ -27,8 +27,11 @@ export interface RenderTarget {
  * space (s along the course, y up in the swept plane); the moving spline
  * frame turns that into loops, hills and banked turns for free.
  */
+/** spawn just past the goal gate so it doesn't fill the opening frame */
+const START_S = 10;
+
 export class PlayerSystem {
-  readonly state: PlayerState = createPlayerState();
+  readonly state: PlayerState = createPlayerState(START_S);
 
   constructor(
     private readonly track: SplineTrack,
@@ -37,7 +40,7 @@ export class PlayerSystem {
   ) {}
 
   reset(): void {
-    Object.assign(this.state, createPlayerState());
+    Object.assign(this.state, createPlayerState(START_S));
   }
 
   /** Collectible systems feed the drill-dash meter. */

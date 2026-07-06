@@ -27,11 +27,11 @@ export interface PlayerState {
   };
 }
 
-export function createPlayerState(): PlayerState {
+export function createPlayerState(startS = 0): PlayerState {
   return {
-    s: 0,
+    s: startS,
     y: 4,
-    sUnwrapped: 0,
+    sUnwrapped: startS,
     vs: 0,
     vy: 0,
     facing: 1,
@@ -40,6 +40,6 @@ export function createPlayerState(): PlayerState {
     boostMeter: 1,
     boosting: false,
     recoveryTimer: 0,
-    prev: { sUnwrapped: 0, y: 4, bank: 0, pitch: 0 },
+    prev: { sUnwrapped: startS, y: 4, bank: 0, pitch: 0 },
   };
 }
