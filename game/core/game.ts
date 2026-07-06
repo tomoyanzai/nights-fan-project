@@ -1,6 +1,8 @@
 import { EventBus } from "./events";
 import { GameLoop } from "./gameLoop";
 import { InputManager } from "@/game/engine/input";
+import { SplineTrack } from "@/game/spline/splineTrack";
+import type { StageDefinition } from "@/game/stages/stageTypes";
 import { gameStore } from "./gameStore";
 
 /**
@@ -12,12 +14,16 @@ export class Game {
   readonly events = new EventBus();
   readonly input = new InputManager();
   readonly loop = new GameLoop();
+  readonly stage: StageDefinition;
+  readonly track: SplineTrack;
 
   /** simulated seconds since start (prev kept for render interpolation) */
   time = 0;
   prevTime = 0;
 
-  private constructor() {
+  private constructor(stage: StageDefinition) {
+    this.stage = stage;
+    this.track = new SplineTrack(stage.course);
     this.loop.addSystem((dt) => {
       this.prevTime = this.time;
       this.time += dt;
@@ -25,8 +31,8 @@ export class Game {
     });
   }
 
-  static create(): Game {
-    return new Game();
+  static create(stage: StageDefinition): Game {
+    return new Game(stage);
   }
 
   /** Interpolated simulation time for rendering. */

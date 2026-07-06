@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Game } from "@/game/core/game";
+import { springValley } from "@/game/stages/springValley";
 import { GameContext } from "./GameContext";
 import { SceneRoot } from "./SceneRoot";
 
@@ -15,7 +16,7 @@ declare global {
 }
 
 export function GameCanvas() {
-  const [game] = useState(() => Game.create());
+  const [game] = useState(() => Game.create(springValley));
 
   useEffect(() => {
     game.start();
