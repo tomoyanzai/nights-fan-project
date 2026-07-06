@@ -385,6 +385,8 @@ export function VerdantHollowEnvironment() {
       <fog attach="fog" args={[PALETTE.fog, 90, 420]} />
       <hemisphereLight args={[PALETTE.skyMid, PALETTE.terrainLow, 0.9]} />
       <directionalLight position={[80, 120, -60]} intensity={1.5} color={PALETTE.sun} />
+      {/* fill from the camera side of the course so the flyer never reads black */}
+      <directionalLight position={[-70, 50, 80]} intensity={0.55} color={PALETTE.skyHorizon} />
       <ambientLight intensity={0.25} color={PALETTE.skyHorizon} />
       <SkyDome />
       <Terrain />

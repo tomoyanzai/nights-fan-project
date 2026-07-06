@@ -104,10 +104,13 @@ export class CameraRig {
 
   private computeWorld(): void {
     this.track.frameAt(this.track.wrap(this.sCam), _frame);
+    // camera sits on the NEGATIVE side of the ribbon: looking at the course
+    // from there puts +tangent (forward, ArrowRight) on the RIGHT of the
+    // screen, so input direction matches screen direction
     this.curPos
       .copy(_frame.position)
       .addScaledVector(_frame.up, this.yCam)
-      .addScaledVector(_frame.side, this.sideDist);
+      .addScaledVector(_frame.side, -this.sideDist);
 
     this.player.worldPosition(_playerPos);
     this.track.frameAt(this.player.state.s, _frame);

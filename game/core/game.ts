@@ -10,6 +10,9 @@ import { Scoring } from "@/game/gameplay/scoring";
 import { RingSystem } from "@/game/gameplay/rings/ringSystem";
 import { ChipSystem } from "@/game/gameplay/bluechips/chipSystem";
 import { MareDirector } from "@/game/gameplay/mareDirector";
+import { AudioEngine } from "@/game/audio/audioEngine";
+import { SfxDirector } from "@/game/audio/sfx";
+import { MusicDirector } from "@/game/audio/music";
 import type { StageDefinition } from "@/game/stages/stageTypes";
 import { gameStore, resetGameUi } from "./gameStore";
 
@@ -35,6 +38,14 @@ export class Game {
   readonly rings: RingSystem;
   readonly chips: ChipSystem;
   readonly mare: MareDirector;
+  readonly audio = new AudioEngine();
+  readonly sfx: SfxDirector;
+  readonly music: MusicDirector;
+
+  private readonly audioGesture = () => {
+    this.audio.ensureStarted();
+    this.music.start();
+  };
 
   /** simulated seconds since start (prev kept for render interpolation) */
   time = 0;
@@ -65,6 +76,8 @@ export class Game {
       this.events,
     );
     this.mare = new MareDirector(stage, this.track, this.player, this.scoring, this.events);
+    this.sfx = new SfxDirector(this.events, this.audio);
+    this.music = new MusicDirector(this.audio, 20260706);
 
     this.paraloop.onLoop = (polygon) => {
       const count = this.rings.field.vacuumInPolygon(polygon) + this.chips.field.vacuumInPolygon(polygon);
@@ -106,6 +119,9 @@ export class Game {
   start(): void {
     this.input.attach();
     this.loop.start();
+    // browsers only allow audio after a user gesture; hook the first one
+    window.addEventListener("keydown", this.audioGesture, { once: true });
+    window.addEventListener("pointerdown", this.audioGesture, { once: true });
   }
 
   /** Begin (or restart) a run of the stage. */
@@ -125,6 +141,7 @@ export class Game {
 
   setPaused(paused: boolean): void {
     this.loop.setPaused(paused);
+    this.audio.setDucked(paused);
     gameStore.setState({ phase: paused ? "paused" : "flying" });
   }
 
@@ -136,6 +153,10 @@ export class Game {
   dispose(): void {
     this.loop.stop();
     this.input.dispose();
+    this.music.stop();
+    this.audio.dispose();
+    window.removeEventListener("keydown", this.audioGesture);
+    window.removeEventListener("pointerdown", this.audioGesture);
     this.events.clear();
   }
 }
