@@ -2,6 +2,8 @@ import { EventBus } from "./events";
 import { GameLoop } from "./gameLoop";
 import { InputManager } from "@/game/engine/input";
 import { SplineTrack } from "@/game/spline/splineTrack";
+import { PlayerSystem } from "@/game/player/playerSystem";
+import { CameraRig } from "@/game/camera/cameraRig";
 import type { StageDefinition } from "@/game/stages/stageTypes";
 import { gameStore } from "./gameStore";
 
@@ -16,6 +18,8 @@ export class Game {
   readonly loop = new GameLoop();
   readonly stage: StageDefinition;
   readonly track: SplineTrack;
+  readonly player: PlayerSystem;
+  readonly cameraRig: CameraRig;
 
   /** simulated seconds since start (prev kept for render interpolation) */
   time = 0;
@@ -24,10 +28,22 @@ export class Game {
   private constructor(stage: StageDefinition) {
     this.stage = stage;
     this.track = new SplineTrack(stage.course);
+    this.player = new PlayerSystem(this.track, this.input, this.events);
+    this.cameraRig = new CameraRig(this.track, this.player, this.events);
+
     this.loop.addSystem((dt) => {
       this.prevTime = this.time;
       this.time += dt;
       this.input.update(dt);
+    });
+    this.loop.addSystem((dt) => this.player.update(dt));
+    this.loop.addSystem((dt) => this.cameraRig.update(dt));
+    // UI-facing writes, throttled to visible changes
+    this.loop.addSystem(() => {
+      const meter = Math.round(this.player.state.boostMeter * 100) / 100;
+      if (gameStore.getState().boostMeter !== meter) {
+        gameStore.setState({ boostMeter: meter });
+      }
     });
   }
 
