@@ -1,0 +1,51 @@
+import { createStore } from "zustand/vanilla";
+import { useStore } from "zustand";
+import type { GamePhase, Rank, ResultsKind } from "./types";
+import { MARE } from "./constants";
+
+/**
+ * UI-facing state only. Systems write here when a value actually changes
+ * (never per frame, except linkTimer01 which UI reads via transient
+ * subscribe). React components subscribe with selectors.
+ */
+export interface GameUiState {
+  phase: GamePhase;
+  score: number;
+  link: number;
+  bestLink: number;
+  /** 0..1 remaining fraction of the link window — transient-subscribed only */
+  linkTimer01: number;
+  chips: number;
+  chipsRequired: number;
+  timeLeft: number;
+  boostMeter: number;
+  goalUnlocked: boolean;
+  rank: Rank | null;
+  resultsKind: ResultsKind | null;
+}
+
+const initialState: GameUiState = {
+  phase: "title",
+  score: 0,
+  link: 0,
+  bestLink: 0,
+  linkTimer01: 0,
+  chips: 0,
+  chipsRequired: MARE.chipsRequired,
+  timeLeft: MARE.timeLimit,
+  boostMeter: 1,
+  goalUnlocked: false,
+  rank: null,
+  resultsKind: null,
+};
+
+export const gameStore = createStore<GameUiState>()(() => ({ ...initialState }));
+
+export function resetGameUi(): void {
+  gameStore.setState({ ...initialState, phase: gameStore.getState().phase });
+}
+
+/** React hook — selector-based subscription to the vanilla store. */
+export function useGameStore<T>(selector: (state: GameUiState) => T): T {
+  return useStore(gameStore, selector);
+}
