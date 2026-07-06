@@ -27,8 +27,8 @@ export const FLIGHT = {
   /** seconds of extra control authority after hitting bounds */
   recoveryTime: 0.25,
   recoveryAccelMult: 1.8,
-  /** visual banking */
-  bankTurnGain: 14,
+  /** visual banking: scales v²κ in the physical bank-angle formula */
+  bankTurnGain: 1.4,
   bankClimbGain: 0.9,
   maxBank: 1.15,
   bankDampLambda: 8,

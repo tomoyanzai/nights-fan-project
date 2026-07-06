@@ -51,6 +51,14 @@ export class MareDirector {
     });
   }
 
+  /** debug cheat: open the goal gate immediately */
+  debugUnlockGoal(): void {
+    if (this.phase !== "flying") return;
+    this.phase = "goalUnlocked";
+    gameStore.setState({ goalUnlocked: true });
+    this.events.emit({ type: "goal:unlocked" });
+  }
+
   update(dt: number): void {
     if (this.phase === "done") return;
 

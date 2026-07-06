@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "@/game/ui/ui.css";
 
 export const metadata: Metadata = {
   title: "Dreamflight",

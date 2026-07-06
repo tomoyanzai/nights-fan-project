@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dreamflight
 
-## Getting Started
+A browser recreation of the *feel* of NiGHTS into Dreams: 2.5D spline-rail
+flight through a dream world, link combos, paraloops, drill dashes and a
+countdown to the goal gate. An educational fan project — every asset
+(geometry, shaders, audio) is procedural and original; nothing is extracted
+from or imitates the original game's assets.
 
-First, run the development server:
+Built with Next.js 15, React 19, TypeScript, Three.js / React Three Fiber,
+Zustand, GLSL and the Web Audio API. Game logic runs in plain TypeScript on a
+fixed-timestep loop; React only renders. See `docs/architecture.md`.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- ← → fly · ↑ ↓ climb/dive · Space/Shift drill dash · Esc pause
+- Collect 20 blue chips, then fly through the glowing gate before 2:00 runs out.
+- Fly a closed loop around collectibles to **paraloop** them all at once.
+- Dev builds (or `?debug=1`) get Leva tuning panels, an FPS meter and a
+  spline visualizer (backquote to toggle).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verify
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build                          # type-safe production build
+pnpm dev &                          # then:
+node scripts/verify-screenshot.mjs  # headless smoke test + screenshots
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`docs/mechanics.md` has the scoring rules and a manual feel checklist.

@@ -2,17 +2,14 @@
 
 import dynamic from "next/dynamic";
 
-// The R3F canvas must never be server-rendered (it touches window/WebGL).
-// Next 15 only allows `ssr: false` inside a client component, hence this shell.
-const GameCanvas = dynamic(
-  () => import("@/game/renderer/GameCanvas").then((m) => m.GameCanvas),
-  { ssr: false },
-);
+// The whole game tree (canvas + DOM overlay sharing one Game instance) is
+// client-only. Next 15 only allows `ssr: false` inside a client component,
+// hence this shell.
+const GameRoot = dynamic(() => import("./GameRoot").then((m) => m.GameRoot), {
+  ssr: false,
+  loading: () => <div className="game-root game-loading">entering the dream…</div>,
+});
 
 export function GameShell() {
-  return (
-    <div className="game-root">
-      <GameCanvas />
-    </div>
-  );
+  return <GameRoot />;
 }
