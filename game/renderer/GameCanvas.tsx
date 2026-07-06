@@ -20,6 +20,9 @@ export function GameCanvas() {
 
   useEffect(() => {
     game.start();
+    // TODO(commit: ui): the Title screen takes over run start; auto-start
+    // keeps the game playable until then.
+    game.startRun();
     if (process.env.NODE_ENV === "development") {
       window.__game = game;
     }

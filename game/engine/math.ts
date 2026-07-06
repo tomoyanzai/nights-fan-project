@@ -34,6 +34,14 @@ export function springDamp(
   return [newX, newV];
 }
 
+/** Signed shortest difference a-b on a circle of circumference length. */
+export function wrapDelta(a: number, b: number, length: number): number {
+  let d = (a - b) % length;
+  if (d > length / 2) d -= length;
+  if (d < -length / 2) d += length;
+  return d;
+}
+
 /** Shortest-path angle wrap into (-PI, PI]. */
 export function wrapAngle(a: number): number {
   a = a % TWO_PI;
