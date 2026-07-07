@@ -32,3 +32,9 @@ node scripts/verify-screenshot.mjs  # headless smoke test + screenshots
 ```
 
 `docs/mechanics.md` has the scoring rules and a manual feel checklist.
+
+## Future platforms
+
+The production charter for porting Dreamflight to Unity / iOS (goals,
+requirements, migration criteria — written as a hand-off AI master prompt)
+lives at `docs/master-prompt-production.md`.
