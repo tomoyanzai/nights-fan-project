@@ -80,3 +80,50 @@ export const MARE = {
   timeLimit: 120,
   chipsRequired: 20,
 };
+
+export const ENEMIES = {
+  /** collision spheres in track space (metres) */
+  enemyRadius: 1.4,
+  playerRadius: 0.8,
+  /** seconds a destroyed nightmaren stays gone before returning home */
+  respawnTime: 20,
+  /** seconds of mare time a contact hit costs — the NiGHTS penalty */
+  damageTimeCost: 5,
+  /** post-hit invulnerability window (seconds) */
+  invulnTime: 1.2,
+  /** fraction of velocity reflected back on a hit */
+  knockback: 0.4,
+  /** upward pop added on a hit (m/s) */
+  knockbackPop: 6,
+  /** points for a drill-destroyed enemy, multiplied by the link count */
+  destroyPoints: 50,
+  /** drill-dash meter refilled per destroy */
+  boostRefill: 0.1,
+
+  // --- floater ---
+  floaterBobAmp: 3,
+  floaterBobPeriod: 4,
+  floaterDriftS: 4,
+  floaterSearchRange: 20,
+
+  // --- chaser ---
+  chaserPatrolRadius: 4,
+  /** patrol circling rate (rad/s) */
+  chaserPatrolOmega: 0.8,
+  chaserSearchRange: 28,
+  chaserAttackRange: 6,
+  chaserSpeed: 14,
+  /** soft-acceleration smoothing while pursuing (higher = snappier) */
+  chaserAccelLambda: 3,
+  chaserLungeSpeed: 26,
+  chaserLungeTime: 0.5,
+  chaserRecoverTime: 1.2,
+  /** velocity settle rate while recovering */
+  chaserRecoverLambda: 2.5,
+  /** give up the chase past this player distance */
+  chaserReturnPlayerDist: 45,
+  /** or once strayed this far from home */
+  chaserStrayDist: 35,
+  /** glide-home smoothing rate */
+  returnLambda: 1.8,
+};

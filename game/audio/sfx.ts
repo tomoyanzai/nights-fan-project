@@ -60,6 +60,24 @@ export class SfxDirector {
       noiseBurst(ctx, dest, this.engine.noise, { filterHz: 260, q: 1.4, decay: 0.25, gain: 0.2 });
     });
 
+    events.on("player:hit", () => {
+      const { ctx, dest } = this.io();
+      if (!ctx || !dest) return;
+      // a soft dissonant thud — this is a dream, not a death
+      if (this.engine.noise) {
+        noiseBurst(ctx, dest, this.engine.noise, { filterHz: 180, q: 1.2, decay: 0.35, gain: 0.22 });
+      }
+      fmBell(ctx, dest, 130, { ratio: 1.41, index: 30, decay: 0.5, gain: 0.2 });
+    });
+
+    events.on("enemy:destroyed", () => {
+      const { ctx, dest } = this.io();
+      if (!ctx || !dest) return;
+      // quick descending zap plus a little shimmer bell
+      glissando(ctx, dest, 900, 220, { duration: 0.18, gain: 0.18 });
+      fmBell(ctx, dest, 1320, { decay: 0.35, gain: 0.1, ratio: 2.01, index: 60, when: 0.05 });
+    });
+
     events.on("goal:unlocked", () => {
       const { ctx, dest } = this.io();
       if (!ctx || !dest) return;

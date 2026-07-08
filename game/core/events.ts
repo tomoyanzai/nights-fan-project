@@ -1,4 +1,5 @@
 import type { Rank, Vec2 } from "./types";
+import type { EnemyKind } from "@/game/gameplay/enemies/enemyTypes";
 
 export type GameEvent =
   | { type: "ring:collected"; index: number; worldPos: [number, number, number]; link: number }
@@ -9,6 +10,8 @@ export type GameEvent =
   | { type: "boost:start" }
   | { type: "boost:end" }
   | { type: "bounds:hit" }
+  | { type: "player:hit"; worldPos: [number, number, number] }
+  | { type: "enemy:destroyed"; kind: EnemyKind; worldPos: [number, number, number] }
   | { type: "goal:unlocked" }
   | { type: "mare:complete"; rank: Rank; score: number }
   | { type: "mare:timeout" }

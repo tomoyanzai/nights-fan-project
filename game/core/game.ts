@@ -9,6 +9,7 @@ import { ComboSystem } from "@/game/gameplay/combo/comboSystem";
 import { Scoring } from "@/game/gameplay/scoring";
 import { RingSystem } from "@/game/gameplay/rings/ringSystem";
 import { ChipSystem } from "@/game/gameplay/bluechips/chipSystem";
+import { EnemySystem } from "@/game/gameplay/enemies/enemySystem";
 import { MareDirector } from "@/game/gameplay/mareDirector";
 import { AudioEngine } from "@/game/audio/audioEngine";
 import { SfxDirector } from "@/game/audio/sfx";
@@ -22,7 +23,7 @@ import { gameStore, resetGameUi } from "./gameStore";
  * calls its high-level actions.
  *
  * Fixed-step update order:
- *   time/input → player → paraloop → rings/chips → combo → mare → camera
+ *   time/input → player → paraloop → rings/chips → enemies → combo → mare → camera
  */
 export class Game {
   readonly events = new EventBus();
@@ -37,6 +38,7 @@ export class Game {
   readonly scoring: Scoring;
   readonly rings: RingSystem;
   readonly chips: ChipSystem;
+  readonly enemies: EnemySystem;
   readonly mare: MareDirector;
   readonly audio = new AudioEngine();
   readonly sfx: SfxDirector;
@@ -75,6 +77,14 @@ export class Game {
       this.scoring,
       this.events,
     );
+    this.enemies = new EnemySystem(
+      stage.enemies,
+      this.track,
+      this.player,
+      this.combo,
+      this.scoring,
+      this.events,
+    );
     this.mare = new MareDirector(stage, this.track, this.player, this.scoring, this.events);
     this.sfx = new SfxDirector(this.events, this.audio);
     this.music = new MusicDirector(this.audio, 20260706);
@@ -96,6 +106,7 @@ export class Game {
       this.paraloop.update(dt, this.player.state);
       this.rings.update(dt);
       this.chips.update(dt);
+      this.enemies.update(dt);
       this.combo.update(dt);
       this.mare.update(dt);
       const meter = Math.round(this.player.state.boostMeter * 100) / 100;
@@ -133,6 +144,7 @@ export class Game {
     this.scoring.reset();
     this.rings.reset();
     this.chips.reset();
+    this.enemies.reset();
     this.mare.reset();
     resetGameUi();
     this.loop.setPaused(false);

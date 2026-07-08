@@ -18,6 +18,8 @@ export interface PlayerState {
   boosting: boolean;
   /** seconds of post-collision control boost remaining */
   recoveryTimer: number;
+  /** seconds of post-hit invulnerability remaining (0 = vulnerable) */
+  invulnTimer: number;
   /** previous-step values for render interpolation */
   prev: {
     sUnwrapped: number;
@@ -40,6 +42,7 @@ export function createPlayerState(startS = 0): PlayerState {
     boostMeter: 1,
     boosting: false,
     recoveryTimer: 0,
+    invulnTimer: 0,
     prev: { sUnwrapped: startS, y: 4, bank: 0, pitch: 0 },
   };
 }

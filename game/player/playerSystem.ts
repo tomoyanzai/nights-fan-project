@@ -83,6 +83,7 @@ export class PlayerSystem {
     st.vs += move.x * FLIGHT.accel * authority * dt;
     st.vy += move.y * FLIGHT.accel * authority * dt;
     st.recoveryTimer = Math.max(st.recoveryTimer - dt, 0);
+    st.invulnTimer = Math.max(st.invulnTimer - dt, 0);
 
     // --- drill dash: surge along the current velocity direction ---
     if (st.boosting) {

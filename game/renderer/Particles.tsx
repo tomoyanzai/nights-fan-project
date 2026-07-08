@@ -123,6 +123,16 @@ export function Particles() {
         _color.set("#ffffff");
         pool.spawn(_playerPos.x, _playerPos.y, _playerPos.z, 8, _color, 4, 0.4);
       }),
+      game.events.on("enemy:destroyed", (e) => {
+        _color.set("#b070ff");
+        pool.spawn(e.worldPos[0], e.worldPos[1], e.worldPos[2], 20, _color, 8, 0.8);
+      }),
+      game.events.on("player:hit", (e) => {
+        _color.set("#ff3355");
+        pool.spawn(e.worldPos[0], e.worldPos[1], e.worldPos[2], 14, _color, 6, 0.5);
+        _color.set("#ffffff");
+        pool.spawn(e.worldPos[0], e.worldPos[1], e.worldPos[2], 8, _color, 4, 0.45);
+      }),
     ];
     return () => offs.forEach((off) => off());
   }, [game, pool]);

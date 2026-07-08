@@ -1,5 +1,6 @@
 import type { EventBus } from "@/game/core/events";
 import { gameStore } from "@/game/core/gameStore";
+import { ENEMIES } from "@/game/core/constants";
 import { wrapDelta } from "@/game/engine/math";
 import type { SplineTrack } from "@/game/spline/splineTrack";
 import type { PlayerSystem } from "@/game/player/playerSystem";
@@ -36,6 +37,12 @@ export class MareDirector {
         gameStore.setState({ goalUnlocked: true });
         this.events.emit({ type: "goal:unlocked" });
       }
+    });
+
+    // the elegant NiGHTS penalty: a hit costs seconds, not health. Clamp above
+    // zero so the normal timeout path still fires from update() next step.
+    events.on("player:hit", () => {
+      this.timeLeft = Math.max(this.timeLeft - ENEMIES.damageTimeCost, 0.01);
     });
   }
 

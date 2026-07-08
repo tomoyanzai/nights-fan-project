@@ -62,6 +62,8 @@ export function PlayerView() {
     game.player.writeRenderTransform(root, game.loop.alpha);
 
     const t = game.renderTime(game.loop.alpha);
+    // blink while invulnerable after a hit (~12 Hz flicker), solid otherwise
+    root.visible = game.player.state.invulnTimer <= 0 || Math.sin(t * 75) > -0.3;
     const dt = Math.max(t - lastT.current, 0);
     lastT.current = t;
     const st = game.player.state;

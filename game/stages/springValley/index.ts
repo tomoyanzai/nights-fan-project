@@ -1,6 +1,7 @@
 import type { StageDefinition } from "../stageTypes";
 import { verdantHollowCourse } from "./course";
 import { compileLayout } from "./layout";
+import { verdantHollowEnemies } from "./enemies";
 import { VerdantHollowEnvironment } from "./environment";
 import { MARE } from "@/game/core/constants";
 
@@ -9,6 +10,7 @@ export const springValley: StageDefinition = {
   name: "Verdant Hollow",
   course: verdantHollowCourse,
   layout: compileLayout(),
+  enemies: verdantHollowEnemies,
   Environment: VerdantHollowEnvironment,
   timeLimit: MARE.timeLimit,
   chipsRequired: MARE.chipsRequired,
