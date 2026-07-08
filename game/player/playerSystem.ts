@@ -1,6 +1,6 @@
 import { Quaternion, Vector3 } from "three";
 import type { EventBus } from "@/game/core/events";
-import { FLIGHT } from "@/game/core/constants";
+import { FLIGHT, FREERUN } from "@/game/core/constants";
 import type { InputManager } from "@/game/engine/input";
 import { clamp, damp, lerp } from "@/game/engine/math";
 import { SplineTrack, TrackFrame } from "@/game/spline/splineTrack";
@@ -32,6 +32,8 @@ const START_S = 10;
 
 export class PlayerSystem {
   readonly state: PlayerState = createPlayerState(START_S);
+  /** free-run opens the corridor up; set by Game.startRun, survives reset() */
+  freeRun = false;
 
   constructor(
     private readonly track: SplineTrack,
@@ -120,7 +122,14 @@ export class PlayerSystem {
     st.s = this.track.wrap(st.sUnwrapped);
 
     // --- corridor clamp with soft bounce + quick recovery ---
-    const [yMin, yMax] = this.track.corridorAt(st.s);
+    let [yMin, yMax] = this.track.corridorAt(st.s);
+    if (this.freeRun) {
+      // widen around the midpoint and lift the ceiling — more sky to roam
+      const mid = (yMin + yMax) / 2;
+      const half = ((yMax - yMin) / 2) * FREERUN.corridorScale;
+      yMin = mid - half;
+      yMax = mid + half + FREERUN.corridorLift;
+    }
     if (st.y < yMin) {
       st.y = yMin;
       if (st.vy < 0) {

@@ -26,6 +26,9 @@ export function ScreenRouter() {
           if (e.code === "Enter" || e.code === "Space") {
             game.events.emit({ type: "ui:select" });
             game.startRun();
+          } else if (e.code === "KeyF") {
+            game.events.emit({ type: "ui:select" });
+            game.startRun("freerun");
           }
           break;
         case "flying":

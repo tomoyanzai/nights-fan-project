@@ -36,6 +36,8 @@ export class MareDirector {
   ) {
     this.timeLeft = stage.timeLimit;
     events.on("chip:collected", () => {
+      // free-run chips are just notes — the goal must never unlock there
+      if (gameStore.getState().mode === "freerun") return;
       this.chips += 1;
       if (this.phase === "flying" && this.chips >= stage.chipsRequired) {
         this.phase = "goalUnlocked";

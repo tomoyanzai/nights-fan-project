@@ -30,6 +30,27 @@ Timeout ⇒ "Night Over" results without a rank.
   items join the chain. The two chip circles on the course are paraloop
   bait: circling them is much faster than threading them.
 
+## Free Run
+
+A scoreless, timerless mode for flying the dream world purely for pleasure —
+entered from the title with **F** (or the "Free Flight" button). No timer,
+score, chips, link or boss: the HUD shows only the drill-dash meter and a
+subtle "Free Flight" label.
+
+- **Wider bounds.** The corridor is scaled ~3.5× around its midpoint with an
+  added ceiling lift (`FREERUN.corridorScale` / `corridorLift`), opening up
+  the flyable sky. The soft bounce/recovery is unchanged.
+- **Musical flight.** Speed (or a held drill dash) opens a lowpass filter on
+  the pad and thickens the melody; altitude lifts the melody register. Ring
+  and chip pickup notes are pitched by the item's **altitude** instead of the
+  link chain. A paraloop triggers a **swell** — the chord progression jumps
+  forward with a louder pad stab as the payoff.
+- **Respawning world.** Collectibles are notes, not points: picking one up
+  scores nothing but plays its note and refills a little boost, then the item
+  returns after `FREERUN.respawnDelay` seconds so the world never empties.
+- **Passive nightmaren.** Enemies never leave patrol and pass harmlessly
+  through the player — drifting dream scenery rather than threats.
+
 ## Feel checklist (manual QA)
 
 - [ ] Vertical loop transit: camera rolls through with no flip or pop.

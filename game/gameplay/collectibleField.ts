@@ -25,6 +25,8 @@ export class CollectibleField {
   readonly y: Float32Array;
   readonly state: Uint8Array;
   readonly vacuumT: Float32Array;
+  /** free-run only: absolute time an item respawns (0 = never) */
+  readonly respawnAt: Float32Array;
   private readonly order: Uint16Array;
 
   constructor(items: readonly TrackPoint[], private readonly trackLength: number) {
@@ -33,6 +35,7 @@ export class CollectibleField {
     this.y = new Float32Array(this.count);
     this.state = new Uint8Array(this.count);
     this.vacuumT = new Float32Array(this.count);
+    this.respawnAt = new Float32Array(this.count);
     items.forEach((item, i) => {
       this.s[i] = ((item.s % trackLength) + trackLength) % trackLength;
       this.y[i] = item.y;
@@ -48,6 +51,7 @@ export class CollectibleField {
   reset(): void {
     this.state.fill(CollectibleState.Active);
     this.vacuumT.fill(0);
+    this.respawnAt.fill(0);
   }
 
   /** Visit active items with wrapped |s - sCenter| <= radius. */
@@ -82,6 +86,22 @@ export class CollectibleField {
       }
     }
     return started;
+  }
+
+  /**
+   * Free-run world refresh: return any Collected item whose respawn time has
+   * arrived back to Active so it renders and can be flown through again.
+   */
+  updateRespawns(now: number): void {
+    for (let i = 0; i < this.count; i += 1) {
+      if (this.state[i] !== CollectibleState.Collected) continue;
+      const at = this.respawnAt[i]!;
+      if (at !== 0 && at <= now) {
+        this.state[i] = CollectibleState.Active;
+        this.vacuumT[i] = 0;
+        this.respawnAt[i] = 0;
+      }
+    }
   }
 
   /**

@@ -135,6 +135,18 @@
   transition: width 0.12s linear;
 }
 
+.hud-mode-label {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: #d8c8ef;
+  opacity: 0.38;
+}
+
 /* ---------------------------------------------------------------- boss */
 
 .boss-pips {
@@ -257,6 +269,13 @@
 .title-start {
   font-size: 22px;
   animation: hud-glow 1.6s ease-in-out infinite;
+}
+
+.title-hint {
+  max-width: 560px;
+  color: #c8b6e6;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .title-controls {

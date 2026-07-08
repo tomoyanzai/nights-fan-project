@@ -16,6 +16,9 @@ import { AudioEngine } from "@/game/audio/audioEngine";
 import { SfxDirector } from "@/game/audio/sfx";
 import { MusicDirector } from "@/game/audio/music";
 import type { StageDefinition } from "@/game/stages/stageTypes";
+import type { GameMode } from "./types";
+import { FLIGHT } from "./constants";
+import { clamp } from "@/game/engine/math";
 import { gameStore, resetGameUi } from "./gameStore";
 
 /**
@@ -54,6 +57,8 @@ export class Game {
   /** simulated seconds since start (prev kept for render interpolation) */
   time = 0;
   prevTime = 0;
+  /** free-run: accumulates dt so musical expression is pushed at ~10 Hz */
+  private expressionAccum = 0;
 
   private constructor(stage: StageDefinition) {
     this.stage = stage;
@@ -105,7 +110,12 @@ export class Game {
 
     this.paraloop.onLoop = (polygon) => {
       const count = this.rings.field.vacuumInPolygon(polygon) + this.chips.field.vacuumInPolygon(polygon);
-      this.scoring.addParaloop(count);
+      // free-run is scoreless: the payoff is a musical swell, not points
+      if (gameStore.getState().mode === "freerun") {
+        this.music.swell();
+      } else {
+        this.scoring.addParaloop(count);
+      }
       this.events.emit({ type: "paraloop", polygon, itemCount: count });
     };
 
@@ -116,14 +126,20 @@ export class Game {
     });
     this.loop.addSystem((dt) => {
       if (gameStore.getState().phase !== "flying") return;
+      const freeRun = gameStore.getState().mode === "freerun";
       this.player.update(dt);
       this.paraloop.update(dt, this.player.state);
       this.rings.update(dt);
       this.chips.update(dt);
       this.enemies.update(dt);
-      this.boss.update(dt);
-      this.combo.update(dt);
-      this.mare.update(dt);
+      // scoring, link decay and the mare/boss flow only exist in a Mare
+      if (!freeRun) {
+        this.boss.update(dt);
+        this.combo.update(dt);
+        this.mare.update(dt);
+      } else {
+        this.updateExpression(dt);
+      }
       const meter = Math.round(this.player.state.boostMeter * 100) / 100;
       if (gameStore.getState().boostMeter !== meter) {
         gameStore.setState({ boostMeter: meter });
@@ -135,6 +151,20 @@ export class Game {
 
   static create(stage: StageDefinition): Game {
     return new Game(stage);
+  }
+
+  /** free-run: feed flight state to the generative music at ~10 Hz */
+  private updateExpression(dt: number): void {
+    this.expressionAccum += dt;
+    if (this.expressionAccum < 0.1) return;
+    this.expressionAccum -= 0.1;
+    const st = this.player.state;
+    const maxSpeed = FLIGHT.maxSpeed * FLIGHT.boostSpeedMult;
+    this.music.setExpression({
+      speed01: clamp(this.player.speed / maxSpeed, 0, 1),
+      altitude01: clamp((st.y + 10) / 50, 0, 1),
+      boosting: st.boosting,
+    });
   }
 
   /** Interpolated simulation time for rendering. */
@@ -150,8 +180,9 @@ export class Game {
     window.addEventListener("pointerdown", this.audioGesture, { once: true });
   }
 
-  /** Begin (or restart) a run of the stage. */
-  startRun(): void {
+  /** Begin (or restart) a run of the stage in the given mode. */
+  startRun(mode: GameMode = "mare"): void {
+    const freeRun = mode === "freerun";
     this.player.reset();
     this.paraloop.reset();
     this.cameraRig.reset();
@@ -163,9 +194,17 @@ export class Game {
     this.boss.reset();
     this.mare.reset();
     this.music.setMode("dream");
+    this.music.clearExpression();
+    // propagate the mode to every system that behaves differently in free run
+    this.player.freeRun = freeRun;
+    this.rings.setFreeRun(freeRun);
+    this.chips.setFreeRun(freeRun);
+    this.enemies.passive = freeRun;
+    this.expressionAccum = 0;
     resetGameUi();
+    // resetGameUi restores the prior mode; stamp the new one explicitly
+    gameStore.setState({ mode, phase: "flying" });
     this.loop.setPaused(false);
-    gameStore.setState({ phase: "flying" });
   }
 
   setPaused(paused: boolean): void {

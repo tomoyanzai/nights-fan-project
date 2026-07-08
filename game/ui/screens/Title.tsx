@@ -8,15 +8,30 @@ export function TitleScreen() {
     <div className="screen screen-title">
       <h1 className="title-logo">Dreamflight</h1>
       <p className="title-sub">a browser homage to flying through dreams</p>
-      <button
-        className="dream-button title-start"
-        onClick={() => {
-          game.events.emit({ type: "ui:select" });
-          game.startRun();
-        }}
-      >
-        Press Enter to Dream
-      </button>
+      <div className="menu-col">
+        <button
+          className="dream-button title-start"
+          onClick={() => {
+            game.events.emit({ type: "ui:select" });
+            game.startRun();
+          }}
+        >
+          Dream Run <kbd>Enter</kbd>
+        </button>
+        <button
+          className="dream-button"
+          onClick={() => {
+            game.events.emit({ type: "ui:select" });
+            game.startRun("freerun");
+          }}
+        >
+          Free Flight <kbd>F</kbd>
+        </button>
+      </div>
+      <p className="title-hint">
+        Free Flight (F): no clock, no score — just the dream, wider skies, and music that answers
+        your flight.
+      </p>
       <div className="title-controls">
         <span>← → fly</span>
         <span>↑ ↓ climb / dive</span>

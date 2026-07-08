@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import { FLIGHT, SCORING } from "@/game/core/constants";
+import { FLIGHT, FREERUN, SCORING } from "@/game/core/constants";
 import type { EventBus } from "@/game/core/events";
 import { wrapDelta } from "@/game/engine/math";
 import type { SplineTrack } from "@/game/spline/splineTrack";
@@ -17,6 +17,8 @@ const _pos = new Vector3();
 
 export class RingSystem {
   readonly field: CollectibleField;
+  private freeRun = false;
+  private now = 0;
 
   constructor(
     items: readonly TrackPoint[],
@@ -31,9 +33,15 @@ export class RingSystem {
 
   reset(): void {
     this.field.reset();
+    this.now = 0;
+  }
+
+  setFreeRun(on: boolean): void {
+    this.freeRun = on;
   }
 
   update(dt: number): void {
+    this.now += dt;
     const st = this.player.state;
     this.field.forEachInWindow(st.s, RING_S_WINDOW + Math.abs(st.vs) * dt, (i) => {
       if (Math.abs(wrapDelta(this.field.s[i]!, st.s, this.track.totalLength)) > RING_S_WINDOW) return;
@@ -42,18 +50,23 @@ export class RingSystem {
       this.collect(i);
     });
     this.field.updateVacuums(dt, (i) => this.collect(i));
+    if (this.freeRun) this.field.updateRespawns(this.now);
   }
 
   private collect(index: number): void {
-    const link = this.combo.registerPickup();
-    this.scoring.addPickup(SCORING.ringPoints, link);
+    // free-run is scoreless and linkless: no combo, no points, just the note
+    const link = this.freeRun ? 0 : this.combo.registerPickup();
+    if (!this.freeRun) this.scoring.addPickup(SCORING.ringPoints, link);
     this.player.addBoost(FLIGHT.boostRefillRing);
+    if (this.freeRun) this.field.respawnAt[index] = this.now + FREERUN.respawnDelay;
     this.track.worldPos(this.field.s[index]!, this.field.y[index]!, _pos);
     this.events.emit({
       type: "ring:collected",
       index,
       worldPos: [_pos.x, _pos.y, _pos.z],
       link,
+      s: this.field.s[index]!,
+      y: this.field.y[index]!,
     });
   }
 }

@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import { FLIGHT, SCORING } from "@/game/core/constants";
+import { FLIGHT, FREERUN, SCORING } from "@/game/core/constants";
 import type { EventBus } from "@/game/core/events";
 import { gameStore } from "@/game/core/gameStore";
 import { wrapDelta } from "@/game/engine/math";
@@ -17,6 +17,8 @@ const _pos = new Vector3();
 export class ChipSystem {
   readonly field: CollectibleField;
   private collected = 0;
+  private freeRun = false;
+  private now = 0;
 
   constructor(
     items: readonly TrackPoint[],
@@ -32,7 +34,12 @@ export class ChipSystem {
   reset(): void {
     this.field.reset();
     this.collected = 0;
+    this.now = 0;
     gameStore.setState({ chips: 0 });
+  }
+
+  setFreeRun(on: boolean): void {
+    this.freeRun = on;
   }
 
   get chipCount(): number {
@@ -40,6 +47,7 @@ export class ChipSystem {
   }
 
   update(dt: number): void {
+    this.now += dt;
     const st = this.player.state;
     this.field.forEachInWindow(st.s, CHIP_S_WINDOW + Math.abs(st.vs) * dt, (i) => {
       if (Math.abs(wrapDelta(this.field.s[i]!, st.s, this.track.totalLength)) > CHIP_S_WINDOW) return;
@@ -48,20 +56,28 @@ export class ChipSystem {
       this.collect(i);
     });
     this.field.updateVacuums(dt, (i) => this.collect(i));
+    if (this.freeRun) this.field.updateRespawns(this.now);
   }
 
   private collect(index: number): void {
-    const link = this.combo.registerPickup();
-    this.scoring.addPickup(SCORING.chipPoints, link);
+    // free-run is scoreless: no combo, no points, and no chip counter, so the
+    // goal gate never unlocks — just the note and the boost refill
+    const link = this.freeRun ? 0 : this.combo.registerPickup();
+    if (!this.freeRun) {
+      this.scoring.addPickup(SCORING.chipPoints, link);
+      this.collected += 1;
+      gameStore.setState({ chips: this.collected });
+    }
     this.player.addBoost(FLIGHT.boostRefillChip);
-    this.collected += 1;
-    gameStore.setState({ chips: this.collected });
+    if (this.freeRun) this.field.respawnAt[index] = this.now + FREERUN.respawnDelay;
     this.track.worldPos(this.field.s[index]!, this.field.y[index]!, _pos);
     this.events.emit({
       type: "chip:collected",
       index,
       worldPos: [_pos.x, _pos.y, _pos.z],
       link,
+      s: this.field.s[index]!,
+      y: this.field.y[index]!,
     });
   }
 }

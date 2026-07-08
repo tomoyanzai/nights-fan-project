@@ -40,6 +40,8 @@ const _pos = new Vector3();
  */
 export class EnemySystem {
   readonly enemies: EnemyRuntime[];
+  /** free-run: nightmaren become harmless drifting scenery (patrol forever) */
+  passive = false;
 
   constructor(
     spawns: readonly EnemySpawn[],
@@ -91,7 +93,9 @@ export class EnemySystem {
       e.s = this.track.wrap(e.s);
 
       // sphere-vs-sphere: both wrapped |Δs| and |Δy| under the combined radius
+      // (passive dream critters drift right through the player)
       if (
+        !this.passive &&
         Math.abs(wrapDelta(e.s, p.s, L)) < sumR &&
         Math.abs(e.y - p.y) < sumR
       ) {
@@ -109,7 +113,7 @@ export class EnemySystem {
         e.s = e.homeS + Math.sin(e.phase * w * 0.5) * ENEMIES.floaterDriftS;
         e.vs = 0;
         e.vy = 0;
-        if (dist <= ENEMIES.floaterSearchRange) e.state = EnemyFsm.Search;
+        if (!this.passive && dist <= ENEMIES.floaterSearchRange) e.state = EnemyFsm.Search;
         break;
       }
       case EnemyFsm.Search: {
@@ -151,7 +155,7 @@ export class EnemySystem {
         e.y = e.homeY + Math.sin(e.phase * ENEMIES.chaserPatrolOmega) * ENEMIES.chaserPatrolRadius;
         e.vs = 0;
         e.vy = 0;
-        if (dist <= ENEMIES.chaserSearchRange) e.state = EnemyFsm.Search;
+        if (!this.passive && dist <= ENEMIES.chaserSearchRange) e.state = EnemyFsm.Search;
         break;
       }
       case EnemyFsm.Search: {

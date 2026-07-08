@@ -2,8 +2,8 @@ import type { Rank, Vec2 } from "./types";
 import type { EnemyKind } from "@/game/gameplay/enemies/enemyTypes";
 
 export type GameEvent =
-  | { type: "ring:collected"; index: number; worldPos: [number, number, number]; link: number }
-  | { type: "chip:collected"; index: number; worldPos: [number, number, number]; link: number }
+  | { type: "ring:collected"; index: number; worldPos: [number, number, number]; link: number; s: number; y: number }
+  | { type: "chip:collected"; index: number; worldPos: [number, number, number]; link: number; s: number; y: number }
   | { type: "link:changed"; link: number }
   | { type: "link:broken"; finalLink: number }
   | { type: "paraloop"; polygon: Vec2[]; itemCount: number }

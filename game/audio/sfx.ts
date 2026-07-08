@@ -1,6 +1,13 @@
 import type { EventBus } from "@/game/core/events";
+import { gameStore } from "@/game/core/gameStore";
+import { clamp } from "@/game/engine/math";
 import type { AudioEngine } from "./audioEngine";
 import { fmBell, glissando, noiseBurst, pentatonic, pluck } from "./synthNodes";
+
+/** free-run: pitch climbs a full octave of scale with the item's altitude */
+function altitudeDegree(y: number): number {
+  return Math.round(clamp((y + 10) / 50, 0, 1) * 12);
+}
 
 /**
  * Maps game events to synth patches. The signature NiGHTS cue: ring pitch
@@ -18,13 +25,20 @@ export class SfxDirector {
     events.on("ring:collected", (e) => {
       const { ctx, dest } = this.io();
       if (!ctx || !dest) return;
-      fmBell(ctx, dest, pentatonic(Math.min(e.link - 1, 9)), { decay: 0.6, gain: 0.22 });
+      // mare: pitch climbs with the link chain; free-run: with altitude
+      if (gameStore.getState().mode === "freerun") {
+        fmBell(ctx, dest, pentatonic(altitudeDegree(e.y)), { decay: 0.8, gain: 0.22 });
+      } else {
+        fmBell(ctx, dest, pentatonic(Math.min(e.link - 1, 9)), { decay: 0.6, gain: 0.22 });
+      }
     });
 
     events.on("chip:collected", (e) => {
       const { ctx, dest } = this.io();
       if (!ctx || !dest) return;
-      const base = pentatonic(Math.min(e.link - 1, 9), 550);
+      const degree =
+        gameStore.getState().mode === "freerun" ? altitudeDegree(e.y) : Math.min(e.link - 1, 9);
+      const base = pentatonic(degree, 550);
       pluck(ctx, dest, base, { when: 0 });
       pluck(ctx, dest, base * 1.25, { when: 0.05 });
       pluck(ctx, dest, base * 1.5, { when: 0.1 });

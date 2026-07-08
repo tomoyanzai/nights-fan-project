@@ -37,6 +37,7 @@ function LinkCounter() {
 
 export function HudRoot() {
   const phase = useGameStore((s) => s.phase);
+  const mode = useGameStore((s) => s.mode);
   const score = useGameStore((s) => s.score);
   const chips = useGameStore((s) => s.chips);
   const chipsRequired = useGameStore((s) => s.chipsRequired);
@@ -47,6 +48,18 @@ export function HudRoot() {
   const bossHitsLeft = useGameStore((s) => s.bossHitsLeft);
 
   if (phase === "title") return null;
+
+  // free run strips the HUD to just the boost meter and a subtle mode label
+  if (mode === "freerun") {
+    return (
+      <div className="hud">
+        <div className="hud-mode-label">Free Flight</div>
+        <div className="hud-boost">
+          <div className="hud-boost-fill" style={{ width: `${Math.round(boostMeter * 100)}%` }} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="hud">

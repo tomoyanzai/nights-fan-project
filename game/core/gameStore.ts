@@ -1,6 +1,6 @@
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand";
-import type { GamePhase, Rank, ResultsKind } from "./types";
+import type { GameMode, GamePhase, Rank, ResultsKind } from "./types";
 import { MARE } from "./constants";
 
 /**
@@ -10,6 +10,7 @@ import { MARE } from "./constants";
  */
 export interface GameUiState {
   phase: GamePhase;
+  mode: GameMode;
   score: number;
   link: number;
   bestLink: number;
@@ -30,6 +31,7 @@ export interface GameUiState {
 
 const initialState: GameUiState = {
   phase: "title",
+  mode: "mare",
   score: 0,
   link: 0,
   bestLink: 0,
@@ -48,7 +50,8 @@ const initialState: GameUiState = {
 export const gameStore = createStore<GameUiState>()(() => ({ ...initialState }));
 
 export function resetGameUi(): void {
-  gameStore.setState({ ...initialState, phase: gameStore.getState().phase });
+  const { phase, mode } = gameStore.getState();
+  gameStore.setState({ ...initialState, phase, mode });
 }
 
 /** React hook — selector-based subscription to the vanilla store. */

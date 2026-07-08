@@ -81,6 +81,16 @@ export const MARE = {
   chipsRequired: 20,
 };
 
+/** Free Run mode: a scoreless, timerless flight through an opened-up world. */
+export const FREERUN = {
+  /** multiplies the corridor half-height around its midpoint */
+  corridorScale: 3.5,
+  /** extra ceiling headroom above the widened corridor (metres) */
+  corridorLift: 6,
+  /** seconds a collected item stays gone before returning to the world */
+  respawnDelay: 12,
+};
+
 export const ENEMIES = {
   /** collision spheres in track space (metres) */
   enemyRadius: 1.4,

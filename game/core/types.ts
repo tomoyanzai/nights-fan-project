@@ -1,5 +1,7 @@
 export type GamePhase = "title" | "flying" | "paused" | "results";
 
+export type GameMode = "mare" | "freerun";
+
 export type Rank = "C" | "B" | "A" | "S";
 
 export type ResultsKind = "clear" | "timeout";
