@@ -127,3 +127,62 @@ export const ENEMIES = {
   /** glide-home smoothing rate */
   returnLambda: 1.8,
 };
+
+/**
+ * The Maelstrom — the serpent nightmaren fought on the course after the goal
+ * gate. A head + body-segment chain in track space; the tail orb is the weak
+ * point. Phase behaviour is keyed on hits remaining (3 → 2 → 1).
+ */
+export const BOSS = {
+  /** hits to defeat (also the pip count) */
+  hits: 3,
+  /** the head anchors this far ahead of the player along the course */
+  aheadDist: 35,
+  /** head follow smoothing toward its weave/anchor target (per second) */
+  headLambda: 1.5,
+  /** body segments trailing the head */
+  segmentCount: 8,
+  /** track-units between successive trailing nodes (segments + tail) */
+  segmentSpacing: 2.2,
+  /** record a breadcrumb every this many track-units of head travel */
+  crumbStep: 0.5,
+
+  /** collision spheres (track-space metres) */
+  headRadius: 1.6,
+  segmentRadius: 1.6,
+  playerRadius: 0.8,
+  /** how close the drill-dash must get to the tail orb to land a hit */
+  tailHitRadius: 2.2,
+
+  /** boss post-hit invulnerability (seconds) */
+  hitInvuln: 1.0,
+  /** knocked-back "reel" after a hit: no attacks, head flung forward */
+  reelTime: 1.2,
+  reelSpeed: 30,
+  /** death animation length before boss:defeated fires */
+  dissolveTime: 2.0,
+  /** points per tail hit (× the link count, like enemies) */
+  points: 500,
+
+  /** dive lunge, shared across phases that use it */
+  diveSpeed: 30,
+  diveTime: 0.6,
+  diveRecoverTime: 1.5,
+
+  // --- phase 3 (3 hits): slow weave, tail always exposed, no dives ---
+  p3Omega: 0.8,
+  p3Amp: 6,
+
+  // --- phase 2 (2 hits): faster weave, dives every ~6 s ---
+  p2Omega: 1.1,
+  p2Amp: 6,
+  p2DiveCooldown: 6,
+
+  // --- phase 1 (1 hit): fastest weave, dives every ~4.5 s, tail blinks ---
+  p1Omega: 1.5,
+  p1Amp: 8,
+  p1DiveCooldown: 4.5,
+  /** tail exposure duty cycle in the final phase (seconds on / off) */
+  tailOnTime: 2.5,
+  tailOffTime: 1.5,
+};

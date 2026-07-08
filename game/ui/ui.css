@@ -135,6 +135,71 @@
   transition: width 0.12s linear;
 }
 
+/* ---------------------------------------------------------------- boss */
+
+.boss-pips {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.boss-pip {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 215, 106, 0.55);
+  background: rgba(20, 8, 40, 0.5);
+  box-shadow: inset 0 0 6px rgba(20, 8, 40, 0.8);
+}
+
+.boss-pip-filled {
+  background: radial-gradient(circle at 35% 30%, #fff3c4, var(--dream-gold) 70%);
+  border-color: var(--dream-gold);
+  box-shadow: 0 0 12px rgba(255, 215, 106, 0.9);
+}
+
+.boss-banner {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(40px, 8vw, 92px);
+  font-weight: 900;
+  letter-spacing: 14px;
+  padding-left: 14px; /* balance the trailing letter-spacing */
+  background: linear-gradient(115deg, #ff5a8a 10%, #c04bff 55%, #7a3bd8 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 26px rgba(192, 75, 255, 0.6));
+  pointer-events: none;
+  opacity: 0;
+  animation: boss-banner 2.2s ease-out forwards;
+}
+
+@keyframes boss-banner {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(1.4);
+    filter: blur(10px) drop-shadow(0 0 26px rgba(192, 75, 255, 0.6));
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    filter: blur(0) drop-shadow(0 0 26px rgba(192, 75, 255, 0.6));
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
 /* ------------------------------------------------------------- screens */
 
 .screen {

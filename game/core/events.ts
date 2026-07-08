@@ -13,6 +13,9 @@ export type GameEvent =
   | { type: "player:hit"; worldPos: [number, number, number] }
   | { type: "enemy:destroyed"; kind: EnemyKind; worldPos: [number, number, number] }
   | { type: "goal:unlocked" }
+  | { type: "boss:intro" }
+  | { type: "boss:hit"; hitsLeft: number; worldPos: [number, number, number] }
+  | { type: "boss:defeated" }
   | { type: "mare:complete"; rank: Rank; score: number }
   | { type: "mare:timeout" }
   | { type: "ui:select" };

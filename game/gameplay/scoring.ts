@@ -28,8 +28,13 @@ export class Scoring {
   }
 }
 
-export function computeRank(score: number, timeLeft: number): Rank {
-  const total = score + Math.round(timeLeft) * 10; // time bonus
+/**
+ * @param bossBonus doubles the time-bonus term (mirrors NiGHTS' boss-clear
+ *   time multiplier) so beating the Maelstrom with seconds to spare rewards
+ *   the same way a fast lap does.
+ */
+export function computeRank(score: number, timeLeft: number, bossBonus = false): Rank {
+  const total = score + Math.round(timeLeft) * (bossBonus ? 20 : 10); // time bonus
   if (total >= 30000) return "S";
   if (total >= 18000) return "A";
   if (total >= 8000) return "B";

@@ -5,6 +5,7 @@ import { CameraController } from "@/game/camera/CameraController";
 import { RingsView } from "@/game/gameplay/rings/RingsView";
 import { ChipsView } from "@/game/gameplay/bluechips/ChipsView";
 import { EnemiesView } from "@/game/gameplay/enemies/EnemiesView";
+import { BossView } from "@/game/gameplay/bosses/BossView";
 import { PlayerView } from "./PlayerView";
 import { Particles } from "./Particles";
 import { useGame } from "./GameContext";
@@ -23,6 +24,7 @@ export function SceneRoot() {
       <RingsView />
       <ChipsView />
       <EnemiesView />
+      <BossView />
       <Particles />
       <CameraController />
       {showDebug ? <SplineVisualizer /> : null}

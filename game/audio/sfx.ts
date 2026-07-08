@@ -84,6 +84,34 @@ export class SfxDirector {
       [0, 2, 4, 5].forEach((d, i) => fmBell(ctx, dest, pentatonic(d, 660), { when: i * 0.09, gain: 0.2, decay: 0.8 }));
     });
 
+    events.on("boss:intro", () => {
+      const { ctx, dest } = this.io();
+      if (!ctx || !dest) return;
+      // a rising dread swell + a deep bell toll as the Maelstrom surfaces
+      glissando(ctx, dest, 80, 220, { duration: 1.6, gain: 0.25 });
+      fmBell(ctx, dest, 82, { ratio: 1.41, index: 40, decay: 1.8, gain: 0.28 });
+    });
+
+    events.on("boss:hit", () => {
+      const { ctx, dest } = this.io();
+      if (!ctx || !dest) return;
+      // a big gold impact: a bright noise smack + a descending bell pair
+      if (this.engine.noise) {
+        noiseBurst(ctx, dest, this.engine.noise, { filterHz: 700, q: 1.1, decay: 0.3, gain: 0.26 });
+      }
+      fmBell(ctx, dest, 660, { decay: 0.5, gain: 0.2, ratio: 2.01, index: 80 });
+      fmBell(ctx, dest, 440, { decay: 0.6, gain: 0.16, ratio: 2.01, index: 80, when: 0.09 });
+    });
+
+    events.on("boss:defeated", () => {
+      const { ctx, dest } = this.io();
+      if (!ctx || !dest) return;
+      // short, bright ascending arpeggio (mare:complete fires right after)
+      [0, 4, 7, 12].forEach((st, i) =>
+        fmBell(ctx, dest, 660 * 2 ** (st / 12), { when: i * 0.06, gain: 0.18, decay: 0.5 }),
+      );
+    });
+
     events.on("mare:complete", () => {
       const { ctx, dest } = this.io();
       if (!ctx || !dest) return;

@@ -10,6 +10,7 @@ import { Scoring } from "@/game/gameplay/scoring";
 import { RingSystem } from "@/game/gameplay/rings/ringSystem";
 import { ChipSystem } from "@/game/gameplay/bluechips/chipSystem";
 import { EnemySystem } from "@/game/gameplay/enemies/enemySystem";
+import { BossSystem } from "@/game/gameplay/bosses/bossSystem";
 import { MareDirector } from "@/game/gameplay/mareDirector";
 import { AudioEngine } from "@/game/audio/audioEngine";
 import { SfxDirector } from "@/game/audio/sfx";
@@ -39,6 +40,7 @@ export class Game {
   readonly rings: RingSystem;
   readonly chips: ChipSystem;
   readonly enemies: EnemySystem;
+  readonly boss: BossSystem;
   readonly mare: MareDirector;
   readonly audio = new AudioEngine();
   readonly sfx: SfxDirector;
@@ -85,9 +87,21 @@ export class Game {
       this.scoring,
       this.events,
     );
+    this.boss = new BossSystem(
+      this.track,
+      this.player,
+      this.combo,
+      this.scoring,
+      this.events,
+    );
     this.mare = new MareDirector(stage, this.track, this.player, this.scoring, this.events);
     this.sfx = new SfxDirector(this.events, this.audio);
     this.music = new MusicDirector(this.audio, 20260706);
+
+    // swap the generative music between dream and boss moods
+    this.events.on("boss:intro", () => this.music.setMode("boss"));
+    this.events.on("boss:defeated", () => this.music.setMode("dream"));
+    this.events.on("mare:timeout", () => this.music.setMode("dream"));
 
     this.paraloop.onLoop = (polygon) => {
       const count = this.rings.field.vacuumInPolygon(polygon) + this.chips.field.vacuumInPolygon(polygon);
@@ -107,6 +121,7 @@ export class Game {
       this.rings.update(dt);
       this.chips.update(dt);
       this.enemies.update(dt);
+      this.boss.update(dt);
       this.combo.update(dt);
       this.mare.update(dt);
       const meter = Math.round(this.player.state.boostMeter * 100) / 100;
@@ -145,7 +160,9 @@ export class Game {
     this.rings.reset();
     this.chips.reset();
     this.enemies.reset();
+    this.boss.reset();
     this.mare.reset();
+    this.music.setMode("dream");
     resetGameUi();
     this.loop.setPaused(false);
     gameStore.setState({ phase: "flying" });

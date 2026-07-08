@@ -20,6 +20,10 @@ export interface GameUiState {
   timeLeft: number;
   boostMeter: number;
   goalUnlocked: boolean;
+  /** the boss fight is live (gate crossed, not yet defeated) */
+  bossActive: boolean;
+  /** serpent hits remaining, drives the HUD pips */
+  bossHitsLeft: number;
   rank: Rank | null;
   resultsKind: ResultsKind | null;
 }
@@ -35,6 +39,8 @@ const initialState: GameUiState = {
   timeLeft: MARE.timeLimit,
   boostMeter: 1,
   goalUnlocked: false,
+  bossActive: false,
+  bossHitsLeft: 0,
   rank: null,
   resultsKind: null,
 };

@@ -43,20 +43,35 @@ export function HudRoot() {
   const timeLeft = useGameStore((s) => s.timeLeft);
   const boostMeter = useGameStore((s) => s.boostMeter);
   const goalUnlocked = useGameStore((s) => s.goalUnlocked);
+  const bossActive = useGameStore((s) => s.bossActive);
+  const bossHitsLeft = useGameStore((s) => s.bossHitsLeft);
 
   if (phase === "title") return null;
 
   return (
     <div className="hud">
-      <div className="hud-chips">
-        <svg viewBox="0 0 20 20" className="hud-chip-icon" aria-hidden>
-          <path d="M10 1 L18 10 L10 19 L2 10 Z" fill="#4ab8ff" stroke="#bfe6ff" strokeWidth="1" />
-        </svg>
-        <span>
-          {Math.min(chips, chipsRequired)}/{chipsRequired}
-        </span>
-        {goalUnlocked ? <span className="hud-goal-hint">GOAL OPEN — fly the gate!</span> : null}
-      </div>
+      {bossActive ? (
+        <div className="boss-pips" aria-label="serpent health">
+          {[0, 1, 2].map((i) => (
+            <span key={i} className={`boss-pip${i < bossHitsLeft ? " boss-pip-filled" : ""}`} />
+          ))}
+        </div>
+      ) : (
+        <div className="hud-chips">
+          <svg viewBox="0 0 20 20" className="hud-chip-icon" aria-hidden>
+            <path d="M10 1 L18 10 L10 19 L2 10 Z" fill="#4ab8ff" stroke="#bfe6ff" strokeWidth="1" />
+          </svg>
+          <span>
+            {Math.min(chips, chipsRequired)}/{chipsRequired}
+          </span>
+          {goalUnlocked ? <span className="hud-goal-hint">GOAL OPEN — fly the gate!</span> : null}
+        </div>
+      )}
+      {bossActive ? (
+        <div className="boss-banner" key="nightmare">
+          NIGHTMARE
+        </div>
+      ) : null}
       <div className={`hud-timer${timeLeft < 20 ? " hud-timer-low" : ""}`}>
         {formatTime(timeLeft)}
       </div>

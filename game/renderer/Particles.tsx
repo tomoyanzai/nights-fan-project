@@ -133,6 +133,16 @@ export function Particles() {
         _color.set("#ffffff");
         pool.spawn(e.worldPos[0], e.worldPos[1], e.worldPos[2], 8, _color, 4, 0.45);
       }),
+      game.events.on("boss:hit", (e) => {
+        _color.set("#ffd76a");
+        pool.spawn(e.worldPos[0], e.worldPos[1], e.worldPos[2], 28, _color, 9, 0.8);
+      }),
+      game.events.on("boss:defeated", () => {
+        // violet cascade at the head as it dissolves (cheap flourish)
+        game.track.worldPos(game.boss.head.s, game.boss.head.y, _pos);
+        _color.set("#c04bff");
+        pool.spawn(_pos.x, _pos.y, _pos.z, 24, _color, 7, 1.1);
+      }),
     ];
     return () => offs.forEach((off) => off());
   }, [game, pool]);
