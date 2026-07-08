@@ -10,12 +10,17 @@
     ]
   },
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.1",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "leva": "^0.10.1",
@@ -35,6 +40,7 @@
     "eslint-config-next": "16.2.10",
     "playwright": "^1.61.1",
     "stats.js": "^0.17.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.108.0"
   }
 }
